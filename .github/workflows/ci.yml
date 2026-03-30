@@ -6,19 +6,15 @@ on:
   pull_request:
     branches: [main]
 
-permissions:
-  contents: read
-
 jobs:
 
   lint:
     name: Code style (flake8)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          token: ${{ github.token }}
+      - name: Checkout
+        run: |
+          git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/Blast-git/echoes_of_the_arena.git .
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -39,10 +35,9 @@ jobs:
     name: Model smoke tests (pytest)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          token: ${{ github.token }}
+      - name: Checkout
+        run: |
+          git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/Blast-git/echoes_of_the_arena.git .
 
       - name: Set up Python
         uses: actions/setup-python@v4
