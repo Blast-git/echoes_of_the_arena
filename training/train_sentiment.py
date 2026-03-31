@@ -157,7 +157,7 @@ y_pred = pipeline.predict(X_test)
 # =============================================================================
 
 BORDER = "═" * 62
-THIN   = "─" * 62
+THIN = "─" * 62
 
 print(f"\n  {BORDER}")
 print(f"  {'ECHOES OF THE ARENA — SENTIMENT CLASSIFIER REPORT':^60}")
@@ -221,10 +221,10 @@ print(f"  Confusion matrix plot saved → {cm_path}")
 #  Feature Importance Plot  (top TF-IDF tokens per class)
 # =============================================================================
 
-tfidf  = pipeline.named_steps["tfidf"]
-clf    = pipeline.named_steps["clf"]
+tfidf = pipeline.named_steps["tfidf"]
+clf = pipeline.named_steps["clf"]
 tokens = np.array(tfidf.get_feature_names_out())
-coefs  = clf.coef_[0]
+coefs = clf.coef_[0]
 
 TOP_N = 15
 top_hon_idx = np.argsort(coefs)[-TOP_N:][::-1]
@@ -240,9 +240,9 @@ for ax, idx, color, title in [
     (axes[1], top_dis_idx, "#f87171", "Dishonorable Tokens (−)"),
 ]:
     ax.set_facecolor("#16213e")
-    vals   = coefs[idx]
+    vals = coefs[idx]
     labels = tokens[idx]
-    bars   = ax.barh(range(TOP_N), vals, color=color, alpha=0.85)
+    bars = ax.barh(range(TOP_N), vals, color=color, alpha=0.85)
     ax.set_yticks(range(TOP_N))
     ax.set_yticklabels(labels, color="white", fontsize=9)
     ax.set_xlabel("Coefficient weight", color="#aaaaaa")
@@ -264,7 +264,7 @@ print(f"  Feature importance plot saved → {feat_path}")
 # =============================================================================
 
 model_path = os.path.join("models", "sentiment_model.pkl")
-vec_path   = os.path.join("models", "tfidf_vectorizer.pkl")
+vec_path = os.path.join("models", "tfidf_vectorizer.pkl")
 
 joblib.dump(pipeline.named_steps["clf"],   model_path)
 joblib.dump(pipeline.named_steps["tfidf"], vec_path)
@@ -287,9 +287,9 @@ print(f"\n  {'─'*62}")
 print(f"  {'INFERENCE DEMO':^60}")
 print(f"  {'─'*62}")
 for rumor in TEST_RUMORS:
-    pred  = pipeline.predict([rumor])[0]
+    pred = pipeline.predict([rumor])[0]
     proba = pipeline.predict_proba([rumor])[0]
     label = "✅ Honorable" if pred == 1 else "☠️  Dishonorable"
-    conf  = max(proba) * 100
+    conf = max(proba) * 100
     print(f"  [{label}] ({conf:.1f}% conf)")
     print(f"   \"{rumor}\"\n")

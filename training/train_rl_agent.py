@@ -26,24 +26,24 @@ import matplotlib.patches as mpatches
 np.random.seed(42)
 
 # ── Hyperparameters ──────────────────────────────────────────────────────────
-EPISODES        = 10_000
-ALPHA           = 0.1       # Learning rate
-GAMMA           = 0.95      # Discount factor
-EPSILON_START   = 1.0       # Initial exploration rate
-EPSILON_END     = 0.05      # Minimum exploration rate
-EPSILON_DECAY   = 0.9995    # Decay multiplier per episode
-ROLLING_WINDOW  = 200       # Window for rolling-average reward plot
+EPISODES = 10_000
+ALPHA = 0.1       # Learning rate
+GAMMA = 0.95      # Discount factor
+EPSILON_START = 1.0       # Initial exploration rate
+EPSILON_END = 0.05      # Minimum exploration rate
+EPSILON_DECAY = 0.9995    # Decay multiplier per episode
+ROLLING_WINDOW = 200       # Window for rolling-average reward plot
 
 # ── Action Indices ────────────────────────────────────────────────────────────
 # Player (simulated bot) actions
-PLAYER_HONORABLE_STRIKE  = 0
-PLAYER_DEFEND            = 1
+PLAYER_HONORABLE_STRIKE = 0
+PLAYER_DEFEND = 1
 PLAYER_DISHONORABLE_POISON = 2
 
 # Agent (enemy gladiator) actions
 AGENT_LIGHT_ATTACK = 0
 AGENT_HEAVY_ATTACK = 1
-AGENT_BLOCK        = 2
+AGENT_BLOCK = 2
 
 N_AGENT_ACTIONS = 3
 
@@ -93,19 +93,19 @@ class ArenaEnv:
     """
 
     # Base combat constants
-    HP_MAX          = 100
-    HONOR_MAX       = 100
+    HP_MAX = 100
+    HONOR_MAX = 100
 
     # Damage / effect tables
-    LIGHT_DMG       = (8,  15)    # (min, max)
-    HEAVY_DMG       = (18, 30)
-    HONORABLE_DMG   = (10, 18)
+    LIGHT_DMG = (8,  15)    # (min, max)
+    HEAVY_DMG = (18, 30)
+    HONORABLE_DMG = (10, 18)
     POISON_DMG_BASE = 12          # fixed per tick; counts as dishonorable
-    DEFEND_BLOCK    = 0.5         # 50 % damage reduction for player on defend
+    DEFEND_BLOCK = 0.5         # 50 % damage reduction for player on defend
 
     # Honor impact
-    HONOR_PENALTY_POISON  = -20
-    HONOR_BONUS_HONORABLE =  10
+    HONOR_PENALTY_POISON = -20
+    HONOR_BONUS_HONORABLE = 10
 
     def __init__(self):
         self.reset()
@@ -113,10 +113,10 @@ class ArenaEnv:
     # ------------------------------------------------------------------
     def reset(self) -> tuple:
         """Reset to a fresh episode and return the initial discrete state."""
-        self.player_hp    = float(self.HP_MAX)
-        self.enemy_hp     = float(self.HP_MAX)
+        self.player_hp = float(self.HP_MAX)
+        self.enemy_hp = float(self.HP_MAX)
         self.player_honor = float(np.random.randint(30, 71))  # start neutral-ish
-        self.done         = False
+        self.done = False
         return self._get_state()
 
     # ------------------------------------------------------------------
@@ -156,10 +156,10 @@ class ArenaEnv:
         assert not self.done, "Episode already finished — call reset()."
 
         player_action = self._simulate_player_action()
-        reward        = 0.0
-        info          = {
+        reward = 0.0
+        info = {
             "player_action": player_action,
-            "agent_action" : agent_action,
+            "agent_action": agent_action,
         }
 
         # ── Player attacks enemy ─────────────────────────────────────
@@ -179,7 +179,7 @@ class ArenaEnv:
                                     self.player_honor + self.HONOR_PENALTY_POISON)
 
         # ── Agent acts ───────────────────────────────────────────────
-        agent_dmg          = 0.0
+        agent_dmg = 0.0
         blocked_this_round = False
 
         if agent_action == AGENT_LIGHT_ATTACK:
@@ -207,11 +207,11 @@ class ArenaEnv:
         if player_action == PLAYER_DEFEND:
             agent_dmg *= (1.0 - self.DEFEND_BLOCK)
 
-        self.enemy_hp  = max(0.0, self.enemy_hp  - player_dmg)
+        self.enemy_hp = max(0.0, self.enemy_hp - player_dmg)
         self.player_hp = max(0.0, self.player_hp - agent_dmg)
 
         info["player_dmg"] = player_dmg
-        info["agent_dmg"]  = agent_dmg
+        info["agent_dmg"] = agent_dmg
 
         # ── Terminal conditions ───────────────────────────────────────
         if self.enemy_hp <= 0:
@@ -235,13 +235,13 @@ class ArenaEnv:
 def train() -> np.ndarray:
     """Run Q-Learning for EPISODES episodes. Returns the trained Q-table."""
 
-    env     = ArenaEnv()
+    env = ArenaEnv()
     q_table = np.zeros(STATE_DIMS + (N_AGENT_ACTIONS,))  # shape (4,4,3,3)
     epsilon = EPSILON_START
 
-    episode_rewards  = []
-    wins             = 0
-    losses           = 0
+    episode_rewards = []
+    wins = 0
+    losses = 0
 
     print("=" * 60)
     print("  Echoes of the Arena — Q-Learning Training")
@@ -251,7 +251,7 @@ def train() -> np.ndarray:
     print("=" * 60)
 
     for ep in range(EPISODES):
-        state       = env.reset()
+        state = env.reset()
         total_reward = 0.0
 
         while True:
@@ -267,16 +267,16 @@ def train() -> np.ndarray:
             # ── Bellman update ────────────────────────────────────────
             # Q(s,a) <- Q(s,a) + alpha * [r + gamma * max Q(s',a') - Q(s,a)]
             best_next_q = np.max(q_table[next_state])
-            td_target   = reward + GAMMA * best_next_q * (not done)
-            td_error    = td_target - q_table[state + (action,)]
+            td_target = reward + GAMMA * best_next_q * (not done)
+            td_error = td_target - q_table[state + (action,)]
             q_table[state + (action,)] += ALPHA * td_error
 
             total_reward += reward
-            state         = next_state
+            state = next_state
 
             if done:
                 if reward >= 100:
-                    wins  += 1
+                    wins += 1
                 elif reward <= -100:
                     losses += 1
                 break
@@ -287,9 +287,9 @@ def train() -> np.ndarray:
 
         # ── Progress log every 1 000 episodes ────────────────────────
         if (ep + 1) % 1_000 == 0:
-            recent   = episode_rewards[-1_000:]
-            avg_r    = np.mean(recent)
-            win_rate = wins  / (ep + 1) * 100
+            recent = episode_rewards[-1_000:]
+            avg_r = np.mean(recent)
+            win_rate = wins / (ep + 1) * 100
             print(f"  Episode {ep+1:>6,} | ε={epsilon:.4f} | "
                   f"Avg Reward (last 1k): {avg_r:+.2f} | "
                   f"Win rate: {win_rate:.1f}%")
@@ -308,13 +308,13 @@ def train() -> np.ndarray:
 def plot_training_curve(episode_rewards: list, save_path: str):
     """Plot rolling average reward and save to disk."""
 
-    rewards  = np.array(episode_rewards)
+    rewards = np.array(episode_rewards)
     episodes = np.arange(1, len(rewards) + 1)
 
     # Rolling average
-    kernel      = np.ones(ROLLING_WINDOW) / ROLLING_WINDOW
+    kernel = np.ones(ROLLING_WINDOW) / ROLLING_WINDOW
     rolling_avg = np.convolve(rewards, kernel, mode="valid")
-    roll_ep     = np.arange(ROLLING_WINDOW, len(rewards) + 1)
+    roll_ep = np.arange(ROLLING_WINDOW, len(rewards) + 1)
 
     fig, ax = plt.subplots(figsize=(12, 5))
     fig.patch.set_facecolor("#1a1a2e")
@@ -379,8 +379,8 @@ def main():
 
     # ── Print learned policy summary ──────────────────────────────────
     action_names = {0: "Light Attack", 1: "Heavy Attack", 2: "Block"}
-    hp_bins      = {0: "Dead", 1: "Low HP", 2: "Med HP", 3: "High HP"}
-    honor_bins   = {0: "Dishonorable", 1: "Neutral", 2: "Honorable"}
+    hp_bins = {0: "Dead", 1: "Low HP", 2: "Med HP", 3: "High HP"}
+    honor_bins = {0: "Dishonorable", 1: "Neutral", 2: "Honorable"}
 
     print("\n  ── Learned Policy Snapshot (best action per state) ──")
     print(f"  {'Player HP':<12} {'Player Honor':<16} {'Agent HP':<10} → Best Action")
@@ -388,7 +388,7 @@ def main():
     for ph in range(1, 4):          # skip Dead
         for ho in range(3):
             for eh in range(1, 4):  # skip Dead
-                state      = (ph, eh, ho)
+                state = (ph, eh, ho)
                 best_action = int(np.argmax(q_table[state]))
                 print(f"  {hp_bins[ph]:<12} {honor_bins[ho]:<16} "
                       f"{hp_bins[eh]:<10} → {action_names[best_action]}")

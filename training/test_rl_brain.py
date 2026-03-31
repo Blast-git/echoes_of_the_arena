@@ -12,17 +12,19 @@ except FileNotFoundError:
 # Action mapping (Based on your Phase 1 prompt)
 agent_actions = {0: "Light Attack", 1: "Heavy Attack", 2: "Block"}
 
+
 def ask_garg(player_hp_bin, enemy_hp_bin, player_honor_bin):
     """Interrogates the Q-table for the best action."""
     # Look up the state in the Q-table
     state_q_values = q_table[player_hp_bin, enemy_hp_bin, player_honor_bin]
-    
+
     # Find the action with the highest Q-value (argmax)
     best_action_index = np.argmax(state_q_values)
-    
+
     return agent_actions[best_action_index], state_q_values
 
 # --- TEST SCENARIOS ---
+
 
 print("=== RUNNING INFERENCE TESTS ===\n")
 

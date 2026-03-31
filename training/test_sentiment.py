@@ -19,7 +19,7 @@ except FileNotFoundError:
 # 2. Create some fake LLM-generated rumors to test
 test_rumors = [
     "He fought bravely and bowed before striking.",  # Should be 1 (Honorable)
-    "He is a coward who threw sand and used poison.", # Should be 0 (Dishonorable)
+    "He is a coward who threw sand and used poison.",  # Should be 0 (Dishonorable)
     "A clean and fair victory for the gladiator.",    # Should be 1 (Honorable)
     "He stabbed him in the back. A dirty trickster!"  # Should be 0 (Dishonorable)
 ]
@@ -30,15 +30,15 @@ X_test_vec = vectorizer.transform(test_rumors)
 
 # 4. Predict the sentiment
 predictions = model.predict(X_test_vec)
-probabilities = model.predict_proba(X_test_vec) # Gets the confidence %
+probabilities = model.predict_proba(X_test_vec)  # Gets the confidence %
 
 # 5. Display the results
 for i in range(len(test_rumors)):
     rumor = test_rumors[i]
     pred = predictions[i]
     confidence = probabilities[i][pred] * 100
-    
+
     label = "🟩 HONORABLE (1)" if pred == 1 else "🟥 DISHONORABLE (0)"
-    
+
     print(f"Rumor: '{rumor}'")
     print(f"Prediction: {label} (Confidence: {confidence:.2f}%)\n")

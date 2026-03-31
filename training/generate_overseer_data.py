@@ -8,10 +8,10 @@ import numpy as np
 import pandas as pd
 
 # ── Config ───────────────────────────────────────────────────────────────────
-NUM_ROWS   = 50_000
+NUM_ROWS = 50_000
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 OUTPUT_CSV = os.path.join(OUTPUT_DIR, "overseer_dataset.csv")
-SEED       = 42
+SEED = 42
 
 np.random.seed(SEED)
 
@@ -19,6 +19,7 @@ np.random.seed(SEED)
 # 0 = Neutral
 # 1 = Buff Player  (Crowd Cheer  — easier fight)
 # 2 = Nerf Player  (Ambush       — harder fight)
+
 
 def compute_reward(player_hp: np.ndarray, action: np.ndarray) -> np.ndarray:
     """
@@ -41,13 +42,13 @@ def compute_reward(player_hp: np.ndarray, action: np.ndarray) -> np.ndarray:
     reward = np.zeros(len(player_hp), dtype=np.float32)
 
     # ── Base HP tension reward ────────────────────────────────────────────
-    in_sweet_spot  = (player_hp >= 20) & (player_hp <= 70)
-    too_easy       = player_hp >= 95
-    too_hard       = player_hp <= 5
+    in_sweet_spot = (player_hp >= 20) & (player_hp <= 70)
+    too_easy = player_hp >= 95
+    too_hard = player_hp <= 5
 
     reward[in_sweet_spot] += 10.0
-    reward[too_easy]      -= 10.0
-    reward[too_hard]      -= 10.0
+    reward[too_easy] -= 10.0
+    reward[too_hard] -= 10.0
 
     # Gradual penalty as HP drifts above 70 (comfort zone)
     drifting_high = (player_hp > 70) & (player_hp < 95)
@@ -58,15 +59,15 @@ def compute_reward(player_hp: np.ndarray, action: np.ndarray) -> np.ndarray:
     reward[drifting_low] -= ((20 - player_hp[drifting_low]) / 15.0) * 8.0
 
     # ── Action quality bonus ──────────────────────────────────────────────
-    buff_good  = (action == 1) & (player_hp < 30)
-    buff_bad   = (action == 1) & (player_hp > 70)
-    nerf_good  = (action == 2) & (player_hp > 70)
-    nerf_bad   = (action == 2) & (player_hp < 30)
+    buff_good = (action == 1) & (player_hp < 30)
+    buff_bad = (action == 1) & (player_hp > 70)
+    nerf_good = (action == 2) & (player_hp > 70)
+    nerf_bad = (action == 2) & (player_hp < 30)
 
     reward[buff_good] += 5.0
-    reward[buff_bad]  -= 5.0
+    reward[buff_bad] -= 5.0
     reward[nerf_good] += 5.0
-    reward[nerf_bad]  -= 5.0
+    reward[nerf_bad] -= 5.0
 
     return reward
 
@@ -74,10 +75,10 @@ def compute_reward(player_hp: np.ndarray, action: np.ndarray) -> np.ndarray:
 def generate_dataset(n: int = NUM_ROWS) -> pd.DataFrame:
     """Generate n rows of synthetic Overseer training data."""
 
-    player_hp   = np.random.randint(0,  101, size=n)
+    player_hp = np.random.randint(0,  101, size=n)
     honor_score = np.random.randint(0,  101, size=n)
-    win_streak  = np.random.randint(0,   11, size=n)
-    action      = np.random.randint(0,    3, size=n)   # 0, 1, or 2
+    win_streak = np.random.randint(0,   11, size=n)
+    action = np.random.randint(0,    3, size=n)   # 0, 1, or 2
 
     reward = compute_reward(player_hp, action)
 

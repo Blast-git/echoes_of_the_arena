@@ -12,19 +12,19 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
-BASE_DIR    = os.path.dirname(__file__)
-DATA_CSV    = os.path.join(BASE_DIR, "..", "data",   "overseer_dataset.csv")
-MODEL_PATH  = os.path.join(BASE_DIR, "..", "models", "overseer_model.pth")
+BASE_DIR = os.path.dirname(__file__)
+DATA_CSV = os.path.join(BASE_DIR, "..", "data",   "overseer_dataset.csv")
+MODEL_PATH = os.path.join(BASE_DIR, "..", "models", "overseer_model.pth")
 
 # ── Hyperparameters ───────────────────────────────────────────────────────────
-INPUT_DIM   = 3       # player_hp, honor_score, win_streak
+INPUT_DIM = 3       # player_hp, honor_score, win_streak
 HIDDEN_SIZE = 64
-OUTPUT_DIM  = 3       # Q-values for actions 0, 1, 2
+OUTPUT_DIM = 3       # Q-values for actions 0, 1, 2
 
-BATCH_SIZE  = 256
-EPOCHS      = 30
-LR          = 1e-3
-SEED        = 42
+BATCH_SIZE = 256
+EPOCHS = 30
+LR = 1e-3
+SEED = 42
 
 torch.manual_seed(SEED)
 np.random.seed(SEED)
@@ -103,12 +103,12 @@ def train():
     os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
 
     # ── Data ──────────────────────────────────────────────────────────────
-    X, Y     = load_data(DATA_CSV)
-    dataset  = TensorDataset(X, Y)
-    loader   = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
+    X, Y = load_data(DATA_CSV)
+    dataset = TensorDataset(X, Y)
+    loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 
     # ── Model, loss, optimiser ────────────────────────────────────────────
-    model     = OverseerDQN().to(DEVICE)
+    model = OverseerDQN().to(DEVICE)
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=LR)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
@@ -131,7 +131,7 @@ def train():
 
             optimizer.zero_grad()
             predictions = model(x_batch)
-            loss        = criterion(predictions, y_batch)
+            loss = criterion(predictions, y_batch)
             loss.backward()
             optimizer.step()
 
@@ -183,11 +183,11 @@ def evaluate_sample():
 
     for s in samples:
         norm = [s[0]/100, s[1]/100, s[2]/10]
-        x    = torch.tensor([norm], dtype=torch.float32).to(DEVICE)
+        x = torch.tensor([norm], dtype=torch.float32).to(DEVICE)
         with torch.no_grad():
             q = model(x).cpu().numpy()[0]
         action = int(np.argmax(q))
-        label  = f"hp={int(s[0])} honor={int(s[1])} streak={int(s[2])}"
+        label = f"hp={int(s[0])} honor={int(s[1])} streak={int(s[2])}"
         print(f"  {label:<30} {str(q.round(3)):<40} {action_names[action]}")
 
 
