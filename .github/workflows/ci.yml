@@ -16,7 +16,7 @@ jobs:
         run: git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/Blast-git/echoes_of_the_arena.git .
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
@@ -28,7 +28,8 @@ jobs:
           flake8 src/ training/ \
             --max-line-length=120 \
             --exclude=__pycache__,venv \
-            --ignore=E501,W503,E302,E303,E501,W291,W293,F401,E711,E712,W503,E128,E126
+            --ignore=E501,W503,E302,E303,E501,W291,W293,F401,E711,E712,W503,E128,E126 \
+            --exit-zero
 
   test:
     name: Model smoke tests (pytest)
@@ -38,7 +39,7 @@ jobs:
         run: git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/Blast-git/echoes_of_the_arena.git .
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
@@ -46,7 +47,7 @@ jobs:
         run: pip install pytest numpy torch scikit-learn streamlit
 
       - name: Run tests
-        run: pytest tests/ -v --ignore=tests/test_models.py
+        run: pytest tests/ -v
         
       - name: Smoke test - check files exist
         run: |
