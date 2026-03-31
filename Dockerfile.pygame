@@ -1,0 +1,33 @@
+FROM python:3.12-slim
+
+RUN apt-get update && apt-get install -y \
+    libsdl2-dev \
+    libsdl2-image-dev \
+    libsdl2-mixer-dev \
+    libsdl2-ttf-dev \
+    libgl1-mesa-dri \
+    libglib2.0-0 \
+    libx11-6 \
+    x11-apps \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir \
+    pygame \
+    numpy==1.26.4 \
+    torch \
+    scikit-learn \
+    opencv-python-headless \
+    faiss-cpu \
+    sentence-transformers
+
+COPY src/ ./src/
+COPY models/ ./models/
+COPY data/ ./data/
+COPY assets/ ./assets/
+
+ENV SDL_VIDEODRIVER=x11
+ENV DISPLAY=:0
+
+CMD ["python", "src/game.py"]

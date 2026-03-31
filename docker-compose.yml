@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: echoes_streamlit
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    restart: unless-stopped
+
+  pygame:
+    build:
+      context: .
+      dockerfile: Dockerfile.pygame
+    container_name: echoes_pygame
+    environment:
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ./data:/app/data
+      - ./models:/app/models
+    network_mode: host
+    restart: unless-stopped
