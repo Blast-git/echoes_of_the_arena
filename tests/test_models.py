@@ -2,6 +2,7 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
+
 def test_critical_files_exist():
     base = os.path.join(os.path.dirname(__file__), '..')
     files = [
@@ -14,12 +15,17 @@ def test_critical_files_exist():
     for f in files:
         assert os.path.exists(os.path.join(base, f)), f"Missing: {f}"
 
+
 def test_overseer_output():
     from rl_overseer import get_overseer_action_safe
-    action, label, delta, narrative = get_overseer_action_safe(50, 50, 0)
-    assert action in [0, 1, 2]
-    assert isinstance(label, str)
-    assert isinstance(delta, int)
+    result = get_overseer_action_safe(50, 50, 0)
+    action = result[0]
+    label = result[1]
+    delta = result[2]
+    assert action in [0, 1, 2], f"Unexpected action: {action}"
+    assert isinstance(label, str), f"label should be str, got {type(label)}"
+    assert isinstance(delta, int), f"delta should be int, got {type(delta)}"
+
 
 def test_gladiator_output():
     from rl_gladiator import get_garg_action

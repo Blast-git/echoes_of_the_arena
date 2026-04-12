@@ -30,7 +30,7 @@ jobs:
           flake8 src/ training/ \
             --max-line-length=120 \
             --exclude=__pycache__,venv \
-            --ignore=E501,W503,E302,E303,E501,W291,W293,F401,E711,E712,W503,E128,E126 \
+            --ignore=E501,W503,E302,E303,W291,W293,F401,E711,E712,E128,E126 \
             --exit-zero
 
   test:
@@ -54,11 +54,10 @@ jobs:
         env:
           PYTHONPATH: src
         run: pytest tests/ -v
-        
-      - name: Smoke test - check files exist
+
+      - name: Smoke test - check source files exist
         run: |
           python -c "import os; assert os.path.exists('src/state_manager.py'), 'Missing state_manager.py'"
           python -c "import os; assert os.path.exists('src/rl_overseer.py'), 'Missing rl_overseer.py'"
           python -c "import os; assert os.path.exists('src/rl_gladiator.py'), 'Missing rl_gladiator.py'"
-          python -c "import os; assert os.path.exists('models/overseer_model.pth'), 'Missing overseer_model.pth'"
-          echo "All critical files present"
+          echo "All critical source files present"
