@@ -1,0 +1,5 @@
+outs:
+- md5: 2d3e41e7f9af4e83270ffc7d609d6afd
+  size: 3969
+  hash: md5
+  path: mock_rumors.csv

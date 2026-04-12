@@ -1,0 +1,4 @@
+/q_table.npy
+/overseer_model.pth
+/sentiment_model.pkl
+/tfidf_vectorizer.pkl
