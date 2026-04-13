@@ -1,4 +1,5 @@
 [core]
-    remote = localremote
-['remote "localremote"']
-    url = /tmp/dvc-storage
+    remote = s3remote
+['remote "s3remote"']
+    url = s3://echoes-arena-dvc
+    region = ap-south-1
